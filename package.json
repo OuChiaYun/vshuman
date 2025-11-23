@@ -1,0 +1,22 @@
+{
+  "name": "voice-chat-avatar",
+  "version": "1.0.0",
+  "description": "Voice chat with 3D avatar powered by Gemini AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "gemini",
+    "avatar",
+    "voice-chat",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ws": "^8.18.3"
+  }
+}

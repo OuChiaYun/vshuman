@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voice Chat Avatar</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>AI Avatar Chat</h1>
+        <p class="subtitle">Chat with voice or text - powered by Gemini</p>
+      </header>
+
+      <main>
+        <!-- 3D Avatar Canvas -->
+        <div class="avatar-container">
+          <div id="avatar"></div>
+        </div>
+
+        <!-- Status Display -->
+        <div class="status-panel">
+          <div class="status-indicator">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-text" id="statusText"
+              >Click Start to begin</span
+            >
+          </div>
+
+          <!-- Debug console -->
+          <div class="debug-console" id="debugConsole">
+            <div class="debug-title">System Log:</div>
+            <div class="debug-messages" id="debugMessages"></div>
+          </div>
+
+          <div class="transcript" id="transcript">
+            <div style="color: #999; font-style: italic">
+              Conversation will appear here...
+            </div>
+          </div>
+        </div>
+
+        <!-- Text Input Option -->
+        <div class="text-input-container">
+          <input
+            type="text"
+            id="textInput"
+            class="text-input"
+            placeholder="Type your message here (or use voice)..."
+            disabled
+          />
+          <button id="sendBtn" class="btn btn-send" disabled>Send</button>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+          <button id="startBtn" class="btn btn-primary">Start Chat</button>
+          <button id="voiceBtn" class="btn btn-voice" disabled>
+            🎤 Start Voice
+          </button>
+          <button id="stopBtn" class="btn btn-secondary" disabled>Stop</button>
+        </div>
+
+        <!-- API Key loaded from backend -->
+        <div class="settings" style="display: none">
+          <small>API key loaded securely from server .env file</small>
+        </div>
+      </main>
+
+      <footer>
+        <p>Built with TalkingHead.js, Three.js, and Gemini Live API</p>
+      </footer>
+    </div>
+
+    <!-- Three.js and TalkingHead.js from CDN -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+          "TalkingHead": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.6/modules/talkinghead.mjs",
+          "wawa-lipsync": "./node_modules/wawa-lipsync/dist/wawa-lipsync.es.js"
+        }
+      }
+    </script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
