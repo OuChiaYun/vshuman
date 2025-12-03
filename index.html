@@ -4,72 +4,315 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Voice Chat Avatar</title>
-    <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>AI Avatar Chat</h1>
-        <p class="subtitle">Chat with voice or text - powered by Gemini</p>
-      </header>
-
-      <main>
-        <!-- 3D Avatar Canvas -->
-        <div class="avatar-container">
-          <div id="avatar"></div>
-        </div>
-
-        <!-- Status Display -->
-        <div class="status-panel">
-          <div class="status-indicator">
-            <span class="status-dot" id="statusDot"></span>
-            <span class="status-text" id="statusText"
-              >Click Start to begin</span
-            >
-          </div>
-
-          <!-- Debug console -->
-          <div class="debug-console" id="debugConsole">
-            <div class="debug-title">System Log:</div>
-            <div class="debug-messages" id="debugMessages"></div>
-          </div>
-
-          <div class="transcript" id="transcript">
-            <div style="color: #999; font-style: italic">
-              Conversation will appear here...
+  <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+    <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col gap-6">
+      <!-- Header -->
+      <header class="text-center space-y-1">
+        <!-- <h1 class="text-3xl font-bold tracking-tight">AI Avatar Chat</h1> -->
+        <!-- <p class="subtitle text-sm text-slate-500">
+          Chat with voice or text - powered by Gemini
+        </p> -->
+        <!-- https://www.svgrepo.com/svg/456911/shop-cart?edit=true -->
+        <div
+          class="bg-sky-600 text-slate-100 rounded-2xl shadow-md flex flex-col text-xs"
+        >
+          <div
+            class="px-3 py-2 border-slate-700 font-semibold flex justify-between items-center"
+          >
+            <p class="text-xl">ShopStream</p>
+            <!-- <p>System Log:</p> -->
+            <div class="flex gap-4 justify-center">
+              <div>
+                <svg
+                  width="30px"
+                  height="30px"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#ffee00"
+                  stroke="#ffee00"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                          stroke: #ffffff;
+                          stroke-miterlimit: 10;
+                          stroke-width: 1.91px;
+                        }
+                      </style>
+                    </defs>
+                    <g id="cart">
+                      <circle
+                        class="cls-1"
+                        cx="10.07"
+                        cy="20.59"
+                        r="1.91"
+                      ></circle>
+                      <circle
+                        class="cls-1"
+                        cx="18.66"
+                        cy="20.59"
+                        r="1.91"
+                      ></circle>
+                      <path
+                        class="cls-1"
+                        d="M.52,1.5H3.18a2.87,2.87,0,0,1,2.74,2L9.11,13.91H8.64A2.39,2.39,0,0,0,6.25,16.3h0a2.39,2.39,0,0,0,2.39,2.38h10"
+                      ></path>
+                      <polyline
+                        class="cls-1"
+                        points="7.21 5.32 22.48 5.32 22.48 7.23 20.57 13.91 9.11 13.91"
+                      ></polyline>
+                    </g>
+                  </g>
+                </svg>
+              </div>
+              <div>
+                <svg
+                  width="30px"
+                  height="30px"
+                  viewBox="0 0 24 24"
+                  id="Layer_1"
+                  data-name="Layer 1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="#ffffff"
+                  stroke="#ffffff"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <defs>
+                      <style>
+                        .cls-1 {
+                          fill: none;
+                          stroke: #ffffff;
+                          stroke-miterlimit: 10;
+                          stroke-width: 1.91px;
+                        }
+                      </style>
+                    </defs>
+                    <rect
+                      class="cls-1"
+                      x="1.5"
+                      y="4.36"
+                      width="21"
+                      height="15.27"
+                    ></rect>
+                    <polyline
+                      class="cls-1"
+                      points="1.5 4.36 12 14.86 22.5 4.36"
+                    ></polyline>
+                    <line
+                      class="cls-1"
+                      x1="9.14"
+                      y1="12"
+                      x2="1.5"
+                      y2="19.64"
+                    ></line>
+                    <line
+                      class="cls-1"
+                      x1="22.5"
+                      y1="19.64"
+                      x2="14.86"
+                      y2="12"
+                    ></line>
+                    <rect
+                      class="cls-1"
+                      x="1.5"
+                      y="4.36"
+                      width="21"
+                      height="15.27"
+                    ></rect>
+                  </g>
+                </svg>
+              </div>
+              <div class="flex justify-center items-center border-b gap-1">
+                <svg
+                  width="30px"
+                  height="30px"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  stroke="#ffffff"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                      stroke="#ffffff"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                    <path
+                      d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+                      stroke="#ffffff"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </g>
+                </svg>
+                <p>USER_123456</p>
+              </div>
             </div>
           </div>
         </div>
+      </header>
 
-        <!-- Text Input Option -->
-        <div class="text-input-container">
-          <input
-            type="text"
-            id="textInput"
-            class="text-input"
-            placeholder="Type your message here (or use voice)..."
-            disabled
-          />
-          <button id="sendBtn" class="btn btn-send" disabled>Send</button>
+      <!-- Main layout -->
+      <main
+        class="flex-1 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] items-start"
+      >
+        <!-- 3D Avatar Canvas -->
+        <div class="w-full h-full">
+          <div
+            class="avatar-container relative bg-slate-900/90 rounded-2xl shadow-lg overflow-hidden flex items-center justify-center aspect-video w-full h-full"
+          >
+            <!-- live  -->
+            <div
+              id="live"
+              class="absolute top-3 right-3 z-10 inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold bg-red-500 text-white shadow-sm"
+            >
+              LIVE
+            </div>
+
+            <!-- 3D avatar -->
+            <div id="avatar" class="w-full h-full"></div>
+          </div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls">
-          <button id="startBtn" class="btn btn-primary">Start Chat</button>
-          <button id="voiceBtn" class="btn btn-voice" disabled>
-            🎤 Start Voice
-          </button>
-          <button id="stopBtn" class="btn btn-secondary" disabled>Stop</button>
-        </div>
+        <!-- Status / logs / transcript -->
+        <div class="status-panel flex flex-col gap-4">
+          <!-- Status Display -->
+          <div
+            class="status-indicator flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 text-slate-100 shadow"
+          >
+            <span
+              id="statusDot"
+              class="status-dot inline-block h-3 w-3 rounded-full bg-slate-400"
+            ></span>
+            <span
+              id="statusText"
+              class="status-text text-sm font-medium truncate"
+            >
+              Click Start to begin
+            </span>
+          </div>
 
-        <!-- API Key loaded from backend -->
-        <div class="settings" style="display: none">
-          <small>API key loaded securely from server .env file</small>
+          <!-- Transcript -->
+          <div
+            id="transcript"
+            class="transcript bg-white rounded-2xl shadow-md border border-slate-200 h-56 overflow-y-auto px-4 py-3 leading-relaxed"
+          >
+            <div class="text-slate-400 border-b font-bold text-l">
+              Live Chat
+            </div>
+          </div>
+          <!-- Text Input -->
+          <div
+            class="text-input-container flex gap-3 items-center mt-2 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm"
+          >
+            <input
+              type="text"
+              id="textInput"
+              class="text-input flex-1 bg-transparent outline-none text-sm placeholder:text-slate-400 disabled:text-slate-400"
+              placeholder="Type your message here (or use voice)..."
+              disabled
+            />
+            <button
+              id="sendBtn"
+              disabled
+              class="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-slate-500 disabled:text-slate-300 disabled:cursor-not-allowed enabled:hover:text-sky-600 enabled:hover:cursor-pointer transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <!-- Controls -->
+          <div class="controls flex flex-wrap gap-3 mt-1 justify-between">
+            <button
+              id="startBtn"
+              class="enabled:hover:cursor-pointer btn btn-primary inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 transition"
+            >
+              Start Chat
+            </button>
+
+            <button
+              id="voiceBtn"
+              class="enabled:hover:cursor-pointer btn btn-voice inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition"
+              disabled
+            >
+              🎤 Start Voice
+            </button>
+
+            <button
+              id="stopBtn"
+              class="enabled:hover:cursor-pointer btn btn-secondary inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium bg-slate-200 text-slate-900 shadow-sm hover:bg-slate-300 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition"
+              disabled
+            >
+              Stop
+            </button>
+          </div>
         </div>
       </main>
 
-      <footer>
+      <!-- Debug console -->
+      <div
+        id="debugConsole"
+        class="debug-console bg-slate-900 text-slate-100 rounded-2xl shadow-md flex flex-col h-40 text-xs"
+      >
+        <div
+          class="debug-title px-3 py-2 border-b border-slate-700 font-semibold"
+        >
+          System Log:
+        </div>
+        <div
+          id="debugMessages"
+          class="debug-messages flex-1 overflow-y-auto px-3 py-2 space-y-1"
+        ></div>
+      </div>
+
+      <!-- API Key note -->
+      <div class="settings hidden">
+        <small class="text-xs text-slate-500">
+          API key loaded securely from server .env file
+        </small>
+      </div>
+
+      <footer class="pt-2 text-center text-xs text-slate-500">
         <p>Built with TalkingHead.js, Three.js, and Gemini Live API</p>
       </footer>
     </div>
