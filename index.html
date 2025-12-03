@@ -289,6 +289,116 @@
         </div>
       </main>
 
+      <!-- ---->
+
+      <div class="w-full flex items-center gap-2 mt-4">
+        <!-- 左箭頭：只控制捲動 -->
+        <button
+          id="cardPrev"
+          type="button"
+          class="flex items-center justify-center w-8 h-20 bg-slate-200 hover:bg-slate-300 rounded-md"
+        >
+          <svg
+            class="w-3 h-3 text-black"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M15 4L7 12L15 20" />
+          </svg>
+        </button>
+
+        <!-- 槽位軌道，卡片用 JS 塞 -->
+        <div
+          id="cardTrack"
+          class="flex-1 flex items-center gap-3 overflow-x-auto px-1"
+        ></div>
+
+        <!-- 右箭頭：只控制捲動 -->
+        <button
+          id="cardNext"
+          type="button"
+          class="flex items-center justify-center w-8 h-20 bg-slate-200 hover:bg-slate-300 rounded-md"
+        >
+          <svg
+            class="w-3 h-3 text-black"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M9 4L17 12L9 20" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="mt-4 border border-slate-200 rounded-md overflow-hidden">
+        <div class="flex items-center justify-between bg-sky-200 px-3 py-2">
+          <div class="flex-1 max-w-md relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              class="w-full h-8 rounded-sm pl-3 pr-8 text-sm border border-sky-300 outline-none"
+            />
+            <svg
+              class="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <line x1="16.65" y1="16.65" x2="21" y2="21" />
+            </svg>
+          </div>
+
+          <div class="flex items-center gap-1 ml-4">
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-black text-white text-xs rounded-sm"
+            >
+              ‹
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs rounded-sm"
+            >
+              1
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              2
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              3
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              4
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              5
+            </button>
+            <span class="text-xs">…</span>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-black text-white text-xs rounded-sm"
+            >
+              ›
+            </button>
+          </div>
+        </div>
+
+        <!-- 商品網格：用 JS 塞 -->
+        <div
+          id="productGrid"
+          class="grid grid-cols-5 gap-4 px-4 py-4 bg-slate-100"
+        ></div>
+      </div>
+
+      <!--  -->
       <!-- Debug console -->
       <div
         id="debugConsole"
@@ -329,5 +439,120 @@
       }
     </script>
     <script type="module" src="app.js"></script>
+
+    <script>
+      // ------- 上面槽位列 -------
+
+      const cardTrack = document.getElementById("cardTrack");
+      const prevBtn = document.getElementById("cardPrev");
+      const nextBtn = document.getElementById("cardNext");
+      const productGrid = document.getElementById("productGrid");
+
+      const TOTAL_SLOTS = 10;
+      const slots = [];
+      const slotData = new Array(TOTAL_SLOTS).fill(null); // 每個槽位存放的商品
+      let currentSlot = 0; // 目前選中的槽位
+
+      const SLOT_BASE_CLASS =
+        "card-item flex-shrink-0 w-32 h-20 rounded-2xl enabled:hover:cursor-pointer " +
+        "flex flex-col items-center justify-center text-[11px] leading-tight";
+
+      function renderSlots() {
+        slots.forEach((slot, i) => {
+          const data = slotData[i];
+          const isSelected = i === currentSlot;
+
+          // 套樣式
+          slot.className =
+            SLOT_BASE_CLASS +
+            " " +
+            (isSelected
+              ? "bg-slate-300 border-[3px] border-black enabled:hover:cursor-pointer "
+              : "bg-slate-200 border border-transparent");
+
+          // 內容：有商品就顯示商品名稱 + 價格，沒有就顯示 Slot n
+          if (data) {
+            slot.innerHTML = `
+          <div class="font-semibold truncate max-w-[7rem]">${data.name}</div>
+          <div class="text-[10px] text-slate-700">$${data.price}</div>
+        `;
+          } else {
+            slot.innerHTML = `<div class="text-slate-500">Slot ${i + 1}</div>`;
+          }
+        });
+      }
+
+      // 建立 10 個槽位按鈕
+      for (let i = 0; i < TOTAL_SLOTS; i++) {
+        const btn = document.createElement("button");
+        btn.dataset.slotIndex = i;
+        btn.addEventListener("click", () => {
+          currentSlot = i; // 改變目前選中的槽位
+          renderSlots();
+        });
+
+        slots.push(btn);
+        cardTrack.appendChild(btn);
+      }
+
+      // 左右箭頭：只控制捲動
+      function scrollTrack(dir) {
+        const amount = cardTrack.clientWidth * 0.8;
+        cardTrack.scrollBy({
+          left: dir * amount,
+          behavior: "smooth",
+        });
+      }
+
+      prevBtn.addEventListener("click", () => scrollTrack(-1));
+      nextBtn.addEventListener("click", () => scrollTrack(1));
+
+      // 初始化槽位顯示
+      renderSlots();
+
+      // ------- 下面商品網格 -------
+
+      // 假商品資料
+      const products = Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        name: `Item ${i + 1}`,
+        price: (10000000 + i * 1000).toLocaleString(),
+      }));
+
+      function createProductCard(product) {
+        const card = document.createElement("button");
+        card.className =
+          "w-40 h-44 bg-slate-200 rounded-2xl overflow-hidden enabled:hover:cursor-pointer " +
+          "flex flex-col shadow-sm hover:shadow-md transition";
+
+        card.innerHTML = `
+      <div class="flex-1 bg-white"></div>
+      <div class="px-2 py-1 text-[11px] text-center">
+        <div class="truncate">${product.name}</div>
+        <div class="font-semibold">$${product.price}</div>
+      </div>
+    `;
+
+        // 點商品 → 把目前選中的槽位內容改成這個商品
+        card.addEventListener("click", () => {
+          // 保險一點：如果完全沒選過，就默認用第 0 格
+          if (currentSlot == null) currentSlot = 0;
+
+          slotData[currentSlot] = {
+            name: product.name,
+            price: product.price,
+          };
+
+          renderSlots(); // 重新畫上面那排
+        });
+
+        return card;
+      }
+
+      // 產生 20 張商品卡片
+      products.forEach((p) => {
+        productGrid.appendChild(createProductCard(p));
+      });
+    </script>
   </body>
 </html>
