@@ -4,72 +4,450 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Voice Chat Avatar</title>
-    <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>AI Avatar Chat</h1>
-        <p class="subtitle">Chat with voice or text - powered by Gemini</p>
-      </header>
+  <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+    <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col gap-6">
+      <!-- Header -->
+      <header class="text-center space-y-1">
+        <!-- <h1 class="text-3xl font-bold tracking-tight">AI Avatar Chat</h1> -->
+        <!-- <p class="subtitle text-sm text-slate-500">
+          Chat with voice or text - powered by Gemini
+        </p> -->
+        <!-- https://www.svgrepo.com/svg/456911/shop-cart?edit=true -->
+        <div
+          class="bg-sky-600 text-slate-100 rounded-2xl shadow-md flex flex-col text-xs"
+        >
+          <div
+            class="px-3 py-2 border-slate-700 font-semibold flex justify-between items-center"
+          >
+            <p class="text-xl">ShopStream</p>
+            <!-- <p>System Log:</p> -->
+            <div class="flex gap-4 justify-center">
+              <button
+                class="inline-flex items-center justify-center text-white hover:text-yellow-300 enabled:hover:cursor-pointer"
+              >
+                <svg
+                  class="w-[30px] h-[30px]"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                >
+                  <g id="cart">
+                    <circle
+                      cx="10.07"
+                      cy="20.59"
+                      r="1.91"
+                      stroke="currentColor"
+                      stroke-width="1.91"
+                      fill="none"
+                    ></circle>
+                    <circle
+                      cx="18.66"
+                      cy="20.59"
+                      r="1.91"
+                      stroke="currentColor"
+                      stroke-width="1.91"
+                      fill="none"
+                    ></circle>
+                    <path
+                      d="M.52,1.5H3.18a2.87,2.87,0,0,1,2.74,2L9.11,13.91H8.64A2.39,2.39,0,0,0,6.25,16.3h0a2.39,2.39,0,0,0,2.39,2.38h10"
+                      stroke="currentColor"
+                      stroke-width="1.91"
+                      fill="none"
+                    ></path>
+                    <polyline
+                      points="7.21 5.32 22.48 5.32 22.48 7.23 20.57 13.91 9.11 13.91"
+                      stroke="currentColor"
+                      stroke-width="1.91"
+                      fill="none"
+                    ></polyline>
+                  </g>
+                </svg>
+              </button>
 
-      <main>
-        <!-- 3D Avatar Canvas -->
-        <div class="avatar-container">
-          <div id="avatar"></div>
-        </div>
+              <button
+                class="inline-flex items-center justify-center text-white hover:text-yellow-300 enabled:hover:cursor-pointer"
+              >
+                <svg
+                  class="w-[30px] h-[30px]"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                >
+                  <!-- 不需要 defs，直接用 currentColor -->
+                  <rect
+                    x="1.5"
+                    y="4.36"
+                    width="21"
+                    height="15.27"
+                    stroke="currentColor"
+                    stroke-width="1.91"
+                    fill="none"
+                  ></rect>
+                  <polyline
+                    points="1.5 4.36 12 14.86 22.5 4.36"
+                    stroke="currentColor"
+                    stroke-width="1.91"
+                    fill="none"
+                  ></polyline>
+                  <line
+                    x1="9.14"
+                    y1="12"
+                    x2="1.5"
+                    y2="19.64"
+                    stroke="currentColor"
+                    stroke-width="1.91"
+                  ></line>
+                  <line
+                    x1="22.5"
+                    y1="19.64"
+                    x2="14.86"
+                    y2="12"
+                    stroke="currentColor"
+                    stroke-width="1.91"
+                  ></line>
+                  <rect
+                    x="1.5"
+                    y="4.36"
+                    width="21"
+                    height="15.27"
+                    stroke="currentColor"
+                    stroke-width="1.91"
+                    fill="none"
+                  ></rect>
+                </svg>
+              </button>
 
-        <!-- Status Display -->
-        <div class="status-panel">
-          <div class="status-indicator">
-            <span class="status-dot" id="statusDot"></span>
-            <span class="status-text" id="statusText"
-              >Click Start to begin</span
-            >
-          </div>
-
-          <!-- Debug console -->
-          <div class="debug-console" id="debugConsole">
-            <div class="debug-title">System Log:</div>
-            <div class="debug-messages" id="debugMessages"></div>
-          </div>
-
-          <div class="transcript" id="transcript">
-            <div style="color: #999; font-style: italic">
-              Conversation will appear here...
+              <div class="flex justify-center items-center border-b gap-1">
+                <svg
+                  width="30px"
+                  height="30px"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  stroke="#ffffff"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                      stroke="#ffffff"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                    <path
+                      d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+                      stroke="#ffffff"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </g>
+                </svg>
+                <p>USER_123456</p>
+              </div>
             </div>
           </div>
         </div>
+      </header>
 
-        <!-- Text Input Option -->
-        <div class="text-input-container">
-          <input
-            type="text"
-            id="textInput"
-            class="text-input"
-            placeholder="Type your message here (or use voice)..."
-            disabled
-          />
-          <button id="sendBtn" class="btn btn-send" disabled>Send</button>
+      <!-- Main layout -->
+      <main
+        class="flex-1 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] items-start"
+      >
+        <!-- 3D Avatar Canvas -->
+        <div class="w-full h-full">
+          <div
+            class="avatar-container relative bg-slate-900/90 rounded-2xl shadow-lg overflow-hidden flex items-center justify-center aspect-video w-full h-full"
+          >
+            <!-- live  -->
+            <div
+              id="live"
+              class="absolute top-3 right-3 z-10 inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold bg-red-500 text-white shadow-sm"
+            >
+              ◉ LIVE
+            </div>
+
+            <div
+              id="live"
+              class="absolute bottom-3 left-3 z-10 inline-flex items-center justify-center font-semibold shadow-sm"
+            >
+              <div class="gap-3 flex w-full justify-between">
+                <div
+                  class="bg-emerald-500 rounded-full text-white text-xs px-3 py-1.5"
+                >
+                  Add To Cart
+                </div>
+                <div
+                  class="bg-violet-500 rounded-full text-white text-xs px-3 py-1.5"
+                >
+                  Buy Now !
+                </div>
+                <div
+                  class="bg-pink-500 rounded-full text-white text-xs px-3 py-1.5"
+                >
+                  Share
+                </div>
+                <div
+                  class="bg-stone-500 rounded-full text-white text-xs px-3 py-1.5"
+                >
+                  Change Streamer
+                </div>
+              </div>
+            </div>
+
+            <!-- 3D avatar -->
+            <div id="avatar" class="w-full h-full"></div>
+          </div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls">
-          <button id="startBtn" class="btn btn-primary">Start Chat</button>
-          <button id="voiceBtn" class="btn btn-voice" disabled>
-            🎤 Start Voice
-          </button>
-          <button id="stopBtn" class="btn btn-secondary" disabled>Stop</button>
-        </div>
+        <!-- Status / logs / transcript -->
+        <div class="status-panel flex flex-col gap-4">
+          <!-- Status Display -->
+          <div
+            class="status-indicator flex items-center gap-2 px-3 py-2 rounded-full bg-slate-800 text-slate-100 shadow"
+          >
+            <span
+              id="statusDot"
+              class="status-dot inline-block h-3 w-3 rounded-full bg-slate-400"
+            ></span>
+            <span
+              id="statusText"
+              class="status-text text-sm font-medium truncate"
+            >
+              Click Start to begin
+            </span>
+          </div>
 
-        <!-- API Key loaded from backend -->
-        <div class="settings" style="display: none">
-          <small>API key loaded securely from server .env file</small>
+          <!-- Transcript -->
+          <div
+            id="transcript"
+            class="transcript bg-white rounded-2xl shadow-md border border-slate-200 h-56 overflow-y-auto px-4 py-3 leading-relaxed"
+          >
+            <div class="text-slate-400 border-b font-bold text-l">
+              Live Chat
+            </div>
+          </div>
+          <!-- Text Input -->
+          <div
+            class="text-input-container flex gap-3 items-center mt-2 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm"
+          >
+            <input
+              type="text"
+              id="textInput"
+              class="text-input flex-1 bg-transparent outline-none text-sm placeholder:text-slate-400 disabled:text-slate-400"
+              placeholder="Type your message here (or use voice)..."
+              disabled
+            />
+            <button
+              id="voiceBtn"
+              disabled
+              class="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-slate-500 disabled:text-slate-300 disabled:cursor-not-allowed enabled:hover:text-sky-600 enabled:hover:cursor-pointer transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                viewBox="0 0 48 48"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+              >
+                <path d="M0 0h48v48H0z" fill="none"></path>
+                <g>
+                  <path
+                    d="M16,12v8c0,4.411,3.589,8,8,8s8-3.589,8-8v-8c0-4.411-3.589-8-8-8S16,7.589,16,12z"
+                  ></path>
+                  <path
+                    d="M36,19.999c0,6.617-5.383,12-12,12s-12-5.383-12-12v-2H8v2c0,8.144,6.12,14.872,14,15.861V40h-6.02v4H22h4h6v-4h-6v-4.14
+           c7.88-0.989,14-7.718,14-15.861v-2h-4V19.999z"
+                  ></path>
+                </g>
+              </svg>
+            </button>
+
+            <button
+              id="sendBtn"
+              disabled
+              class="inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-slate-500 disabled:text-slate-300 disabled:cursor-not-allowed enabled:hover:text-sky-600 enabled:hover:cursor-pointer transition-colors"
+            >
+              <svg
+                class="w-6 h-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <!-- Controls -->
+          <div class="controls flex flex-wrap gap-3 mt-1 justify-between">
+            <button
+              id="startBtn"
+              class="enabled:hover:cursor-pointer btn btn-primary inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 transition"
+            >
+              Start Chat
+            </button>
+
+            <button
+              id="stopBtn"
+              class="enabled:hover:cursor-pointer btn btn-secondary inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium bg-slate-200 text-slate-900 shadow-sm hover:bg-slate-300 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition"
+              disabled
+            >
+              Stop
+            </button>
+          </div>
         </div>
       </main>
 
-      <footer>
+      <!-- ---->
+
+      <div class="w-full flex items-center gap-2 mt-4">
+        <!-- 左箭頭：只控制捲動 -->
+        <button
+          id="cardPrev"
+          type="button"
+          class="flex items-center justify-center w-8 h-20 bg-slate-200 hover:bg-slate-300 rounded-md"
+        >
+          <svg
+            class="w-3 h-3 text-black"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M15 4L7 12L15 20" />
+          </svg>
+        </button>
+
+        <!-- 槽位軌道，卡片用 JS 塞 -->
+        <div
+          id="cardTrack"
+          class="flex-1 flex items-center gap-3 overflow-x-auto px-1"
+        ></div>
+
+        <!-- 右箭頭：只控制捲動 -->
+        <button
+          id="cardNext"
+          type="button"
+          class="flex items-center justify-center w-8 h-20 bg-slate-200 hover:bg-slate-300 rounded-md"
+        >
+          <svg
+            class="w-3 h-3 text-black"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M9 4L17 12L9 20" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="mt-4 border border-slate-200 rounded-md overflow-hidden">
+        <div class="flex items-center justify-between bg-sky-200 px-3 py-2">
+          <div class="flex-1 max-w-md relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              class="w-full h-8 rounded-sm pl-3 pr-8 text-sm border border-sky-300 outline-none"
+            />
+            <svg
+              class="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <line x1="16.65" y1="16.65" x2="21" y2="21" />
+            </svg>
+          </div>
+
+          <div class="flex items-center gap-1 ml-4">
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-black text-white text-xs rounded-sm"
+            >
+              ‹
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-red-500 text-white text-xs rounded-sm"
+            >
+              1
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              2
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              3
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              4
+            </button>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-white text-slate-900 text-xs rounded-sm"
+            >
+              5
+            </button>
+            <span class="text-xs">…</span>
+            <button
+              class="w-6 h-6 flex items-center justify-center bg-black text-white text-xs rounded-sm"
+            >
+              ›
+            </button>
+          </div>
+        </div>
+
+        <!-- 商品網格：用 JS 塞 -->
+        <div
+          id="productGrid"
+          class="grid grid-cols-5 gap-4 px-4 py-4 bg-slate-100"
+        ></div>
+      </div>
+
+      <!--  -->
+      <!-- Debug console -->
+      <div
+        id="debugConsole"
+        class="debug-console bg-slate-900 text-slate-100 rounded-2xl shadow-md flex flex-col h-40 text-xs"
+      >
+        <div
+          class="debug-title px-3 py-2 border-b border-slate-700 font-semibold"
+        >
+          System Log:
+        </div>
+        <div
+          id="debugMessages"
+          class="debug-messages flex-1 overflow-y-auto px-3 py-2 space-y-1"
+        ></div>
+      </div>
+
+      <!-- API Key note -->
+      <div class="settings hidden">
+        <small class="text-xs text-slate-500">
+          API key loaded securely from server .env file
+        </small>
+      </div>
+
+      <footer class="pt-2 text-center text-xs text-slate-500">
         <p>Built with TalkingHead.js, Three.js, and Gemini Live API</p>
       </footer>
     </div>
@@ -86,5 +464,119 @@
       }
     </script>
     <script type="module" src="app.js"></script>
+
+    <script>
+      // ------- 上面槽位列 -------
+
+      const cardTrack = document.getElementById("cardTrack");
+      const prevBtn = document.getElementById("cardPrev");
+      const nextBtn = document.getElementById("cardNext");
+      const productGrid = document.getElementById("productGrid");
+
+      const TOTAL_SLOTS = 10;
+      const slots = [];
+      const slotData = new Array(TOTAL_SLOTS).fill(null); // 每個槽位存放的商品
+      let currentSlot = 0; // 目前選中的槽位
+
+      const SLOT_BASE_CLASS =
+        "card-item flex-shrink-0 w-32 h-20 rounded-2xl enabled:hover:cursor-pointer " +
+        "flex flex-col items-center justify-center text-[11px] leading-tight";
+
+      function renderSlots() {
+        slots.forEach((slot, i) => {
+          const data = slotData[i];
+          const isSelected = i === currentSlot;
+
+          // 套樣式
+          slot.className =
+            SLOT_BASE_CLASS +
+            " " +
+            (isSelected
+              ? "bg-slate-300 border-[3px] border-black enabled:hover:cursor-pointer "
+              : "bg-slate-200 border border-transparent");
+
+          // 內容：有商品就顯示商品名稱 + 價格，沒有就顯示 Slot n
+          if (data) {
+            slot.innerHTML = `
+          <div class="font-semibold truncate max-w-[7rem]">${data.name}</div>
+          <div class="text-[10px] text-slate-700">$${data.price}</div>
+        `;
+          } else {
+            slot.innerHTML = `<div class="text-slate-500">Slot ${i + 1}</div>`;
+          }
+        });
+      }
+
+      // 建立 10 個槽位按鈕
+      for (let i = 0; i < TOTAL_SLOTS; i++) {
+        const btn = document.createElement("button");
+        btn.dataset.slotIndex = i;
+        btn.addEventListener("click", () => {
+          currentSlot = i; // 改變目前選中的槽位
+          renderSlots();
+        });
+
+        slots.push(btn);
+        cardTrack.appendChild(btn);
+      }
+
+      // 左右箭頭：只控制捲動
+      function scrollTrack(dir) {
+        const amount = cardTrack.clientWidth * 0.8;
+        cardTrack.scrollBy({
+          left: dir * amount,
+          behavior: "smooth",
+        });
+      }
+
+      prevBtn.addEventListener("click", () => scrollTrack(-1));
+      nextBtn.addEventListener("click", () => scrollTrack(1));
+
+      // 初始化槽位顯示
+      renderSlots();
+
+      // ------- 下面商品網格 -------
+
+      // 假商品資料
+      const products = Array.from({ length: 10 }, (_, i) => ({
+        id: i,
+        name: `Item ${i + 1}`,
+        price: (10000000 + i * 1000).toLocaleString(),
+      }));
+
+      function createProductCard(product) {
+        const card = document.createElement("button");
+        card.className =
+          "w-40 h-44 bg-slate-200 rounded-2xl overflow-hidden enabled:hover:cursor-pointer " +
+          "flex flex-col shadow-sm hover:shadow-md transition";
+
+        card.innerHTML = `
+      <div class="flex-1 bg-white"></div>
+      <div class="px-2 py-1 text-[11px] text-center">
+        <div class="truncate">${product.name}</div>
+        <div class="font-semibold">$${product.price}</div>
+      </div>
+    `;
+
+        // 點商品 → 把目前選中的槽位內容改成這個商品
+        card.addEventListener("click", () => {
+          // 保險一點：如果完全沒選過，就默認用第 0 格
+          if (currentSlot == null) currentSlot = 0;
+
+          slotData[currentSlot] = {
+            name: product.name,
+            price: product.price,
+          };
+
+          renderSlots(); // 重新畫上面那排
+        });
+
+        return card;
+      }
+
+      products.forEach((p) => {
+        productGrid.appendChild(createProductCard(p));
+      });
+    </script>
   </body>
 </html>
