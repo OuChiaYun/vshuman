@@ -9,7 +9,13 @@ const state = {
     apiKey: null, // Gemini API key - fetched from backend
     ttsApiKey: null, // Google Cloud TTS API key - fetched from backend
     audioContext: null,
-    currentStatus: 'idle'
+    currentStatus: 'idle',
+    llmProvider: 'gemini', // 'gemini' or 'vllm'
+    vllmConfig: {
+        serverUrl: 'http://140.112.90.146:8000',
+        model: 'openai/gpt-oss-20b'
+    },
+    recognition: null // for SpeechRecognition
 };
 
 // DOM elements
@@ -22,7 +28,8 @@ const elements = {
     transcript: document.getElementById('transcript'),
     debugMessages: document.getElementById('debugMessages'),
     textInput: document.getElementById('textInput'),
-    sendBtn: document.getElementById('sendBtn')
+    sendBtn: document.getElementById('sendBtn'),
+    switchLLMBtn: document.getElementById('switchLLMBtn')
 };
 
 // Debug logger
@@ -114,12 +121,47 @@ async function initAvatar() {
         // Add mouse scroll zoom functionality
         setupZoomControls(head, container);
 
+        // Initialize SpeechRecognition
+        if ('webkitSpeechRecognition' in window) {
+            state.recognition = new webkitSpeechRecognition();
+            state.recognition.continuous = false;
+            state.recognition.interimResults = false;
+            state.recognition.lang = 'en-US';
+
+            state.recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                logDebug(`Speech recognized: "${transcript}"`, 'info');
+                addTranscript('user', transcript);
+                sendTextMessage(transcript);
+            };
+
+            state.recognition.onerror = (event) => {
+                logDebug(`Speech recognition error: ${event.error}`, 'error');
+                updateStatus('error', 'Speech recognition error');
+            };
+        } else {
+            logDebug('Speech recognition not supported in this browser.', 'warning');
+        }
+
+
     } catch (error) {
         console.error('Failed to load avatar:', error);
         logDebug(`Avatar load failed: ${error.message}`, 'error');
         updateStatus('error', 'Failed to load avatar. Check console for details.');
     }
 }
+
+let slotState  = window.__SLOTS_STATE__ ?? null;
+
+if (slotState ) {
+  console.log("[app.js] initial:", slotState );
+}
+
+window.addEventListener("slots:state", (e) => {
+  slotState  = e.detail; // { list: [...], active: idx, reason: ... }
+  console.log("[app.js] updated:", slotState );
+});
+
 
 // Setup zoom controls with mouse wheel
 function setupZoomControls(head, container) {
@@ -217,8 +259,29 @@ async function connectGemini() {
     return true;
 }
 
+// Initialize vLLM
+async function connectVLLM() {
+    logDebug(`vLLM provider selected. Server: ${state.vllmConfig.serverUrl}`, 'info');
+    updateStatus('idle', 'Ready! Use voice or text to chat with vLLM');
+    return true;
+}
+
+
 // Start recording audio
 async function startRecording() {
+    if (state.llmProvider === 'vllm') {
+        if (state.recognition) {
+            logDebug('Starting speech recognition...', 'info');
+            state.recognition.start();
+            state.isRecording = true;
+            updateStatus('listening', 'Listening... Speak now!');
+        } else {
+            logDebug('Speech recognition not available.', 'error');
+            updateStatus('error', 'Speech recognition not supported');
+        }
+        return;
+    }
+
     try {
         logDebug('Requesting microphone access...', 'info');
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -266,6 +329,16 @@ async function startRecording() {
 
 // Stop recording and send to Gemini
 async function stopRecording() {
+    if (state.llmProvider === 'vllm') {
+        if (state.recognition && state.isRecording) {
+            logDebug('Stopping speech recognition...', 'info');
+            state.recognition.stop();
+            state.isRecording = false;
+            updateStatus('thinking', 'Processing speech...');
+        }
+        return;
+    }
+
     logDebug('Stopping recording...', 'info');
 
     if (!state.mediaRecorder || !state.isRecording) return;
@@ -505,9 +578,14 @@ async function speakText(text) {
 async function sendTextMessage(text) {
     if (!text || !text.trim()) return;
 
+    if (state.llmProvider === 'vllm') {
+        sendTextMessageToVLLM(text);
+        return;
+    }
+
     text = text.trim();
-    logDebug(`Sending text message: "${text}"`, 'info');
-    addTranscript('user', text);
+    logDebug(`Sending text message to Gemini: "${text}"`, 'info');
+    //addTranscript('user', text);
     updateStatus('thinking', 'AI is thinking...');
 
     try {
@@ -547,16 +625,73 @@ async function sendTextMessage(text) {
     }
 }
 
+// Send text message to vLLM server
+async function sendTextMessageToVLLM(text) {
+    if (!text || !text.trim()) return;
+
+    text = text.trim();
+    logDebug(`Sending text message to vLLM: "${text}"`, 'info');
+    // The transcript is already added by the speech recognition result or text input handler
+    // addTranscript('user', text); 
+    updateStatus('thinking', 'AI is thinking...');
+
+    try {
+        const response = await fetch(
+            `${state.vllmConfig.serverUrl}/v1/chat/completions`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: state.vllmConfig.model,
+                    messages: [
+                        { role: 'user', content: text }
+                    ]
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.choices && data.choices[0]?.message?.content) {
+            const aiText = data.choices[0].message.content;
+
+            logDebug(`AI response: "${aiText.substring(0, 100)}${aiText.length > 100 ? '...' : ''}"`, 'success');
+            addTranscript('ai', aiText);
+
+            await speakText(aiText);
+        } else {
+            logDebug('No response from vLLM', 'error');
+        }
+
+        updateStatus('idle', 'Ready! Use voice or text to chat');
+
+    } catch (error) {
+        console.error('Error sending text message to vLLM:', error);
+        logDebug(`vLLM Error: ${error.message}`, 'error');
+        updateStatus('error', 'Failed to get response from vLLM');
+    }
+}
+
+
 // Event listeners
 elements.startBtn.addEventListener('click', async () => {
     logDebug('Start button clicked', 'info');
-    const connected = await connectGemini();
+    let connected = false;
+    if (state.llmProvider === 'gemini') {
+        connected = await connectGemini();
+    } else {
+        connected = await connectVLLM();
+    }
+
     if (connected) {
         elements.startBtn.disabled = true;
         elements.voiceBtn.disabled = false;
         elements.stopBtn.disabled = false;
         elements.textInput.disabled = false;
         elements.sendBtn.disabled = false;
+        elements.switchLLMBtn.disabled = true; // Disable switching during a session
         logDebug('Chat session started', 'success');
     }
 });
@@ -603,6 +738,7 @@ elements.stopBtn.addEventListener('click', () => {
     elements.textInput.disabled = true;
     elements.sendBtn.disabled = true;
     elements.textInput.value = '';
+    elements.switchLLMBtn.disabled = false; // Re-enable switching
     elements.voiceBtn.disabled=true;
 
     updateStatus('idle', 'Chat stopped. Click Start to begin again.');
@@ -613,6 +749,7 @@ elements.stopBtn.addEventListener('click', () => {
 elements.sendBtn.addEventListener('click', () => {
     const text = elements.textInput.value;
     if (text.trim()) {
+        addTranscript('user', text);
         sendTextMessage(text);
         elements.textInput.value = '';
         elements.textInput.focus();
@@ -624,6 +761,7 @@ elements.textInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const text = elements.textInput.value;
         if (text.trim()) {
+            addTranscript('user', text);
             sendTextMessage(text);
             elements.textInput.value = '';
         }
