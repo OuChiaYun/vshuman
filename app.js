@@ -10,7 +10,7 @@ const state = {
     ttsApiKey: null, // Google Cloud TTS API key - fetched from backend
     audioContext: null,
     currentStatus: 'idle',
-    llmProvider: 'gemini', // 'gemini' or 'vllm'
+    llmProvider: 'vllm', // 'gemini' or 'vllm'
     vllmConfig: {
         serverUrl: 'http://140.112.90.146:8000',
         model: 'openai/gpt-oss-20b'
@@ -29,7 +29,7 @@ const elements = {
     debugMessages: document.getElementById('debugMessages'),
     textInput: document.getElementById('textInput'),
     sendBtn: document.getElementById('sendBtn'),
-    switchLLMBtn: document.getElementById('switchLLMBtn')
+    // switchLLMBtn: document.getElementById('switchLLMBtn')
 };
 
 // Debug logger
@@ -691,7 +691,7 @@ elements.startBtn.addEventListener('click', async () => {
         elements.stopBtn.disabled = false;
         elements.textInput.disabled = false;
         elements.sendBtn.disabled = false;
-        elements.switchLLMBtn.disabled = true; // Disable switching during a session
+        // elements.switchLLMBtn.disabled = true; // Disable switching during a session
         logDebug('Chat session started', 'success');
     }
 });
@@ -738,8 +738,7 @@ elements.stopBtn.addEventListener('click', () => {
     elements.textInput.disabled = true;
     elements.sendBtn.disabled = true;
     elements.textInput.value = '';
-    elements.switchLLMBtn.disabled = false; // Re-enable switching
-    elements.voiceBtn.disabled=true;
+    // elements.switchLLMBtn.disabled = false; // Re-enable switching
 
     updateStatus('idle', 'Chat stopped. Click Start to begin again.');
     logDebug('Chat session ended', 'success');
@@ -767,6 +766,22 @@ elements.textInput.addEventListener('keypress', (e) => {
         }
     }
 });
+
+// LLM Provider switch handler
+// elements.switchLLMBtn.addEventListener('click', () => {
+//     if (state.llmProvider === 'gemini') {
+//         state.llmProvider = 'vllm';
+//         elements.switchLLMBtn.textContent = 'Use Gemini';
+//         logDebug('Switched to vLLM provider', 'info');
+//         document.querySelector('.subtitle').textContent = 'Chat with voice or text - powered by vLLM';
+//     } else {
+//         state.llmProvider = 'gemini';
+//         elements.switchLLMBtn.textContent = 'Use vLLM';
+//         logDebug('Switched to Gemini provider', 'info');
+//         document.querySelector('.subtitle').textContent = 'Chat with voice or text - powered by Gemini';
+//     }
+// });
+
 
 // Initialize avatar on page load
 initAvatar();
