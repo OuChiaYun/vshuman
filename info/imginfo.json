@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Azoth Extreme",
+    "text": "",
+    "price": 1200,
+    "text_url": "./script/Azoth_Extreme.txt",
+    "image_url": "./images/Azoth_Extreme.png"
+  },
+  {
+    "name": "Azoth X",
+    "text": "",
+    "price": 1000,
+    "text_url": "./script/Azoth_X.txt",
+    "image_url": "./images/Azoth_X.png"
+  },
+  {
+    "name": "ROG DEDSTRIER CORE",
+    "text": "",
+    "price": 100,
+    "text_url": "./script/ROG_DEDSTRIER_CORE.txt",
+    "image_url": "./images/ROG_DEDSTRIER_CORE.png"
+  },
+  {
+    "name": "ROG Delta II",
+    "text": "",
+    "price": 1320,
+    "text_url": "./script/ROG_Delta_II.txt",
+    "image_url": "./images/ROG_Delta_II.png"
+  },
+  {
+    "name": "ROG Falchion Ace HFX",
+    "text": "",
+    "price": 465,
+    "text_url": "./script/ROG_Falchion_Ace_HFX_ZywOo_Edition.txt",
+    "image_url": "./images/ROG_Falchion_Ace_HFX_ZywOo_Edition.png"
+  },
+  {
+    "name": "ROG Keris II Ace Gaming",
+    "text": "",
+    "price": 123,
+    "text_url": "./script/ROG_Keris_II_Ace_Gaming_Mouse.txt",
+    "image_url": "./images/ROG_Keris_II_Ace_Gaming_Mouse.png"
+  },
+  {
+    "name": "ROG Pelta",
+    "text": "",
+    "price": 63262,
+    "text_url": "./script/ROG_Pelta.txt",
+    "image_url": "./images/ROG_Pelta.png"
+  }
+]

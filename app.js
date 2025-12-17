@@ -151,6 +151,18 @@ async function initAvatar() {
     }
 }
 
+let slotState  = window.__SLOTS_STATE__ ?? null;
+
+if (slotState ) {
+  console.log("[app.js] initial:", slotState );
+}
+
+window.addEventListener("slots:state", (e) => {
+  slotState  = e.detail; // { list: [...], active: idx, reason: ... }
+  console.log("[app.js] updated:", slotState );
+});
+
+
 // Setup zoom controls with mouse wheel
 function setupZoomControls(head, container) {
     // Access the camera from TalkingHead
@@ -459,7 +471,7 @@ async function sendAudioMessage(audioChunks) {
                 .join('');
 
             logDebug(`AI response: "${aiText.substring(0, 100)}${aiText.length > 100 ? '...' : ''}"`, 'success');
-            addTranscript('ai', aiText);
+            // addTranscript('ai', aiText);
 
             // Speak the response using browser TTS
             await speakText(aiText);
@@ -573,7 +585,7 @@ async function sendTextMessage(text) {
 
     text = text.trim();
     logDebug(`Sending text message to Gemini: "${text}"`, 'info');
-    addTranscript('user', text);
+    //addTranscript('user', text);
     updateStatus('thinking', 'AI is thinking...');
 
     try {
@@ -598,7 +610,7 @@ async function sendTextMessage(text) {
                 .join('');
 
             logDebug(`AI response: "${aiText.substring(0, 100)}${aiText.length > 100 ? '...' : ''}"`, 'success');
-            addTranscript('ai', aiText);
+            // addTranscript('ai', aiText);
 
             // Speak the response using browser TTS
             await speakText(aiText);
@@ -690,13 +702,15 @@ elements.voiceBtn.addEventListener('click', async () => {
         logDebug('Voice button clicked - starting microphone', 'info');
         await startRecording();
         if (state.isRecording) {
-            elements.voiceBtn.textContent = '🔴 Stop Voice';
+            // elements.voiceBtn.textContent = '🔴 Stop Voice';
+
             updateStatus('listening', 'Listening... Speak now!');
         }
     } else {
         logDebug('Voice button clicked - stopping microphone', 'info');
-        elements.voiceBtn.textContent = '🎤 Start Voice';
-        await stopRecording();
+        // elements.voiceBtn.textContent = '🎤 Start Voice';
+
+        await stopRecording(); // This will send audio to Gemini
     }
 });
 
@@ -707,6 +721,7 @@ elements.stopBtn.addEventListener('click', () => {
     // Stop avatar speech if it's currently speaking
     if (state.head) {
         state.head.stopSpeaking();
+
     }
     // Also stop browser TTS if it's running
     window.speechSynthesis.cancel();
@@ -718,7 +733,7 @@ elements.stopBtn.addEventListener('click', () => {
 
     elements.startBtn.disabled = false;
     elements.voiceBtn.disabled = true;
-    elements.voiceBtn.textContent = '🎤 Start Voice';
+    // elements.voiceBtn.textContent = '🎤 Start Voice';
     elements.stopBtn.disabled = true;
     elements.textInput.disabled = true;
     elements.sendBtn.disabled = true;
