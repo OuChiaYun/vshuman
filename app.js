@@ -501,6 +501,7 @@ function pickRandomSlotWithTextUrl(list) {
 }
 
 let slotState = window.__SLOTS_STATE__ ?? null;
+var picked = null
 
 function initSlotsBridge() {
   if (slotState) console.log('[app.js] initial slots:', slotState);
@@ -515,17 +516,18 @@ function initSlotsBridge() {
     emitTtsQueueState({ reason: 'product-click-received' });
 
     // ✅ 只有「完全閒置」才 enqueue
-    if (!isTtsIdle()) {
-      logDebug('product-click: TTS busy → only update queue state (no enqueue)', 'info');
-      return;
-    }
+    // if (!isTtsIdle()) {
+    //   logDebug('product-click: TTS busy → only update queue state (no enqueue)', 'info');
+    //   return;
+    // }
 
-    const picked = pickRandomSlotWithTextUrl(slotState?.list);
+    picked = pickRandomSlotWithTextUrl(slotState?.list);
     if (!picked) {
       logDebug('product-click: No slot has text_url. Nothing to speak.', 'warning');
       return;
     }
 
+    console.log("picked: ", picked)
     // 讀檔 + 排隊念
     enqueueSpeak(
       async () => {
@@ -759,6 +761,12 @@ async function sendAudioMessage(audioChunks) {
 /* =========================
    Text -> Gemini / vLLM
 ========================= */
+
+async function sendTextMessageFromUser(text, picked) {
+  text += JSON.stringify(picked);
+  return sendTextMessage(text);
+}
+
 async function sendTextMessage(text) {
   if (!text || !text.trim()) return;
 
@@ -906,7 +914,9 @@ function initEventListeners() {
       const text = elements.textInput?.value ?? '';
       if (text.trim()) {
         addTranscript('user', text);
-        sendTextMessage(text);
+        picked
+        sendTextMessageFromUser(text, picked);
+        // sendTextMessage(text);
         if (elements.textInput) {
           elements.textInput.value = '';
           elements.textInput.focus();
@@ -921,7 +931,8 @@ function initEventListeners() {
         const text = elements.textInput.value;
         if (text.trim()) {
           addTranscript('user', text);
-          sendTextMessage(text);
+          // sendTextMessage(text);
+          sendTextMessageFromUser(text, picked)
           elements.textInput.value = '';
         }
       }
